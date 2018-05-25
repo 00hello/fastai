@@ -70,8 +70,9 @@ def read_dirs(path, folder):
         if lbl not in ('.ipynb_checkpoints','.DS_Store'):
             all_lbls.append(lbl)
             for fname in os.listdir(os.path.join(full_path, lbl)):
-                fnames.append(os.path.join(folder, lbl, fname))
-                lbls.append(lbl)
+                if fname not in ('.DS_Store'):
+                    fnames.append(os.path.join(folder, lbl, fname))
+                    lbls.append(lbl)
     return fnames, lbls, all_lbls
 
 def n_hot(ids, c):
@@ -451,6 +452,8 @@ class ImageClassifierData(ImageData):
         Returns:
             ImageClassifierData
         """
+        assert not (tfms[0] is None or tfms[1] is None), "please provide transformations for your train and validation sets"
+        assert not (os.path.isabs(folder)), "folder needs to be a relative path"
         fnames,y,classes = csv_source(folder, csv_fname, skip_header, suffix, continuous=continuous)
         return cls.from_names_and_array(path, fnames, y, classes, val_idxs, test_name,
                 num_workers=num_workers, suffix=suffix, tfms=tfms, bs=bs, continuous=continuous)
